@@ -23,14 +23,22 @@ namespace YimMenu::Features
 		    || action == "NET_SHOP_ACTION_BUY_WAREHOUSE"_J;
 	}
 
-	static int GetStatValueFromHash(joaat_t itemHash)
+    static int GetStatValueFromHash(joaat_t itemHash)
 	{
 		auto* catalog = Pointers.NetCatalog;
 		if (!catalog)
 			return -1;
 
-		auto* item = Pointers.GetCatalogItem(catalog, &itemHash);
-		return item ? item->m_StatValue : -1;
+		int result = -1;
+
+		catalog->ForEachItem([&](const rage::netCatalogBaseItem& item) {
+			if (result != -1)
+				return;
+			if (item.m_Hash == itemHash)
+				result = item.m_StatValue;
+		});
+
+		return result;
 	}
 
 
